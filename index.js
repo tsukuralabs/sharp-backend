@@ -1,22 +1,28 @@
-const http = require('http');
-const fs = require('fs');
+const http = require("http");
+const fs = require("fs");
 
 const server = http.createServer((req, res) => {
+  const url = req.url;
+  console.log("url", url);
 
-    const url = req.url;
-    console.log('url', url);
+  const method = req.method;
+  console.log("method", method);
 
-    const method = req.method;
-    console.log('method', method);
+  // req.setHeader('Content-Type', 'text/html');
 
-    // req.setHeader('Content-Type', 'text/html');
+  if (req.url === "/") {
+    fs.readFile("formValues.txt", (err, data) => {
+      let username = "";
 
-    if (req.url === '/') {
-        
-        res.setHeader('Content-Type', 'text/html');
+      if (!err) {
+        username = data.toString();
+      }
 
-        res.end(
-            `
+      res.setHeader("Content-Type", "text/html");
+
+      res.end(
+        `
+            <h1>${username}</h1>
             <form action="/message" method="POST">
 
             <label>Name: </label>
@@ -25,59 +31,76 @@ const server = http.createServer((req, res) => {
             <button type="submit">Add</button>
 
             </form>
-            `
-        )
-    } else {
-        if (req.url == '/message') {
-            res.setHeader('Content-Type', 'text/html');
+        `,
+      );
+    });
+  } else {
+    if (req.url == "/message") {
+      res.setHeader("Content-Type", "text/html");
 
-            // so when request is made data travels in streams.
-            // therefore, req is iteself is an stream
+      // so when request is made data travels in streams.
+      // therefore, req is iteself is an stream
 
-            let dataChunks = [];
+      let dataChunks = [];
 
-            req.on('data', (chunks) => {
-                console.log('chunks:  ', chunks);
-                dataChunks.push(chunks);
-            })
+      req.on("data", (chunks) => {
+        console.log("chunks:  ", chunks);
+        dataChunks.push(chunks);
+      });
 
-            req.on('end', () => {
-                let formData = Buffer.concat(dataChunks).toString();
-                console.log(formData.toString());
+      req.on("end", () => {
+        let formData = Buffer.concat(dataChunks).toString();
+        console.log(formData.toString());
 
-                const formValues = formData.split("=");
-                const username = formValues[1];
+        const formValues = formData.split("=");
+        const username = formValues[1];
 
-                // write a file
-                // 1st parameter -> filename
-                // 3rd parameter --> callback function for error.
-                fs.writeFile('formValues.txt', username, (err) => {
+        // write a file
+        // 1st parameter -> filename
+        // 3rd parameter --> callback function for error.
+        fs.writeFile("formValues.txt", username, (err) => {
+          if (err) {
+            console.log(err);
+            res.statusCode = 500;
+            res.end("File writing failed");
+            return;
+          }
 
-                    if (err) {
-                        console.log(err);
-                        res.statusCode = 500;
-                        res.end('File writing failed');
-                        return;
-                    }
+          // 302 -> redirected
+          res.statusCode = 302;
 
-                    // 302 -> redirected
-                    res.statusCode = 302;
+          // 1st parameter is type  --. like location
+          // 2nd -> actual location(where u want to redirected the user).
+          res.setHeader("Location", "/");
 
-                    // 1st parameter is type  --. like location
-                    // 2nd -> actual location(where u want to redirected the user).
-                    res.setHeader('Location', '/');
-
-                    res.end();
-                })
-
-            });
-
-        }
+          res.end();
+        });
+      });
     }
+
+    // else {
+    //     if (req.url == '/read') {
+    //         // How to read from a file
+    //         // callback contains 2 parameters --> err & data
+    //         fs.readFile('formValues.txt', (err, data) => {
+    //             // it gives us an buffer so convert it into an string
+
+    //             const formData = data.toString();
+    //             console.log('data', formData);
+
+    //             // How to print data on web page
+    //             res.end(
+    //                 `
+    //                 <h1>${data.toString()}</h1>
+    //                 `
+    //             );
+    //         })
+    //     }
+    // }
+  }
 });
 
 let port = 3000;
 server.listen(port, () => {
-    console.log('Server is listening at', port);
+  console.log("Server is listening at", port);
 });
-
