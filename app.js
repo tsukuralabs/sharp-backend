@@ -5,7 +5,11 @@ const orderRouter = require('./src/routes/orderRoute');
 const categoriesRouter = require('./src/routes/categoriesRoute');
 const productRouter = require('./src/routes/productRoute');
 
+const loggingmiddleware = require('./src/middlewares/logging');
+
 const app = express();
+
+app.use(loggingmiddleware);
 
 app.get('/', (req, res) => {
   res.send('Welcome to express server');
