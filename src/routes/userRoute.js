@@ -3,7 +3,6 @@ const express = require('express');
 const userRouter = express.Router();
 
 
-// Home route
 userRouter.post("/users", (req, res) => {
   res.send('A new user has been added');
 });

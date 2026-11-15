@@ -2,6 +2,8 @@
 const express = require('express');
 const userRouter = require('./src/routes/userRoute');
 const orderRouter = require('./src/routes/orderRoute');
+const categoriesRouter = require('./src/routes/categoriesRoute');
+const productRouter = require('./src/routes/productRoute');
 
 const app = express();
 
@@ -11,13 +13,19 @@ app.get('/', (req, res) => {
 
 app.use('/', userRouter);
 app.use('/', orderRouter);
+app.use('/', categoriesRouter);
+app.use('/', productRouter);
 
 // const routes = require('./routes');
 
 // routes.testFunction();
 // const server = http.createServer(routes.handler)
 
-let port = 3000;
+app.all('/{*splat}', (req, res) => {
+  res.status(404).send('<h1>404 - Page Not Found</h1>');
+});
+
+let port = 4000;
 app.listen(port, () => {
   console.log(`Server is up and running on port ${port}! Ready to handle requests.`);
 });
