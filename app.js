@@ -1,10 +1,16 @@
 // const http = require("http");
 const express = require('express');
-const userRouter = require('./src/routes/routes');
+const userRouter = require('./src/routes/userRoute');
+const orderRouter = require('./src/routes/orderRoute');
 
 const app = express();
 
+app.get('/', (req, res) => {
+  res.send('Welcome to express server');
+});
+
 app.use('/', userRouter);
+app.use('/', orderRouter);
 
 // const routes = require('./routes');
 
