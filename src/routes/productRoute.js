@@ -4,7 +4,7 @@ const productRouter = express.Router();
 
 productRouter.post('/products', (req, res) => {
 
-    res.send('A new product has been created');
+    res.send('A new product has been added');
 });
 
 
