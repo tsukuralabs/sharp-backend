@@ -1,7 +1,10 @@
 // const http = require("http");
 const express = require('express');
+const userRouter = require('./src/routes/routes');
 
 const app = express();
+
+app.use('/', userRouter);
 
 // const routes = require('./routes');
 

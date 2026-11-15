@@ -537,3 +537,6 @@ if (cluster.isMaster) {
 1. Each worker runs on a separate CPU core
 2. Multiple requests are processed simultaneously
 3. Improved scalability without significant code changes
+
+---
+
