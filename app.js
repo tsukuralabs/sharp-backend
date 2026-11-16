@@ -5,8 +5,8 @@ const userRouter = require('./src/routes/userRoutes');
 // const categoriesRouter = require('./src/routes/categoriesRoute');
 const productRouter = require('./src/routes/productRoutes');
 // const bookRouter = require('./src/routes/bookRoutes');
-const studentRouter = require('./src/routes/studentRoutes');
-const courseRouter = require('./src/routes/courseRoutes');
+// const studentRouter = require('./src/routes/studentRoutes');
+// const courseRouter = require('./src/routes/courseRoutes');
 const cartRouter = require('./src/routes/cartRoutes');
 
 const loggingmiddleware = require('./src/middlewares/logging');
@@ -25,8 +25,8 @@ app.use('/', userRouter);
 // app.use('/', categoriesRouter);
 app.use('/', productRouter);
 // app.use('/', bookRouter);
-app.use('/', studentRouter);
-app.use('/', courseRouter);
+// app.use('/', studentRouter);
+// app.use('/', courseRouter);
 app.use('/', cartRouter);
 
 
