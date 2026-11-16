@@ -1,0 +1,22 @@
+const express = require('express');
+
+const userRouter = express.Router();
+
+
+userRouter.post("/users", (req, res) => {
+  res.send('Adding a new user');
+});
+
+userRouter.get("/users", (req, res) => {
+  res.send('Fetching all the users');
+});
+
+userRouter.get("/users/:userId", (req, res) => {
+
+  const userId = req.params.userId;
+
+  res.send(`Fetching user with ID: ${userId}`);
+
+});
+
+module.exports = userRouter;

@@ -1,12 +1,13 @@
 // const http = require("http");
 const express = require('express');
-// const userRouter = require('./src/routes/userRoute');
+const userRouter = require('./src/routes/userRoutes');
 // const orderRouter = require('./src/routes/orderRoute');
 // const categoriesRouter = require('./src/routes/categoriesRoute');
-// const productRouter = require('./src/routes/productRoute');
+const productRouter = require('./src/routes/productRoutes');
 // const bookRouter = require('./src/routes/bookRoutes');
 const studentRouter = require('./src/routes/studentRoutes');
 const courseRouter = require('./src/routes/courseRoutes');
+const cartRouter = require('./src/routes/cartRoutes');
 
 const loggingmiddleware = require('./src/middlewares/logging');
 
@@ -19,14 +20,14 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Student & Course Portal API!');
 });
 
-// app.use('/', userRouter);
+app.use('/', userRouter);
 // app.use('/', orderRouter);
 // app.use('/', categoriesRouter);
-// app.use('/', productRouter);
+app.use('/', productRouter);
 // app.use('/', bookRouter);
 app.use('/', studentRouter);
 app.use('/', courseRouter);
-
+app.use('/', cartRouter);
 
 
 app.all('/{*splat}', (req, res) => {
