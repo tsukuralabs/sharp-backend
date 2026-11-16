@@ -1,15 +1,24 @@
-// Business Logic
+let products = [];
 
 const getAllProducts = () => {
-    return 'Fetching all products';
+    return products;
 };
 
 const getProductById = (productId) => {
-    return `Fetching product with ID: ${productId}`;
+    return products.find(
+        product => product.id === Number(productId)
+    );
 };
 
-const addProduct = () => {
-    return 'Adding a new product';
+const addProduct = (productName) => {
+    const product = {
+        id: products.length + 1,
+        productName
+    };
+
+    products.push(product);
+
+    return product;
 };
 
 module.exports = {

@@ -23,7 +23,10 @@ const getProductById = (req, res) => {
 };
 
 const addProduct = (req, res) => {
-    const result = addProductService();
+    const {productName} = req.body;
+    const result = addProductService(productName);
+
+    console.log('res', result);
 
     res.send(result);
 };
