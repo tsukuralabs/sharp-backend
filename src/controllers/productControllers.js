@@ -1,8 +1,13 @@
+const path = require('path');
 const {
     getAllProducts: getAllProductsService,
     getProductById: getProductByIdService,
     addProduct: addProductService
-} = require('../services/productService');
+} = require('../services/productServices');
+
+const getProductsPage = (req, res) => {
+    res.sendFile(path.join(__dirname, '../view/products.html'));
+};
 
 const getAllProducts = (req, res) => {
     const result = getAllProductsService();
@@ -26,5 +31,6 @@ const addProduct = (req, res) => {
 module.exports = {
     getAllProducts,
     getProductById,
-    addProduct
+    addProduct,
+    getProductsPage
 };
