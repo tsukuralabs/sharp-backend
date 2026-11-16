@@ -8,7 +8,7 @@ const {
     getProductsPage
 } = require('../controllers/productControllers');
 
-productRouter.post('/products', addProduct);
+productRouter.post('/api/products', addProduct);
 
 productRouter.get('/products', getAllProducts);
 

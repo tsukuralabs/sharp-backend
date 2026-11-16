@@ -1,39 +1,41 @@
-const path = require('path');
+const path = require("path");
+
 const {
-    getAllProducts: getAllProductsService,
-    getProductById: getProductByIdService,
-    addProduct: addProductService
-} = require('../services/productServices');
+  getAllProducts: getAllProductsService,
+  getProductById: getProductByIdService,
+  addProduct: addProductService,
+} = require("../services/productServices");
 
 const getProductsPage = (req, res) => {
-    res.sendFile(path.join(__dirname, '../view/products.html'));
+  res.sendFile(path.join(__dirname, "../view/products.html"));
 };
 
 const getAllProducts = (req, res) => {
-    const result = getAllProductsService();
-    res.send(result);
+  const result = getAllProductsService();
+  res.send(result);
 };
 
 const getProductById = (req, res) => {
-    const productId = req.params.productId;
+  const productId = req.params.productId;
 
-    const result = getProductByIdService(productId);
+  const result = getProductByIdService(productId);
 
-    res.send(result);
+  res.send(result);
 };
 
 const addProduct = (req, res) => {
-    const {productName} = req.body;
-    const result = addProductService(productName);
+  const { productName } = req.body;
 
-    console.log('res', result);
+  const result = addProductService(productName);
 
-    res.send(result);
+  console.log("Product added:", result);
+
+  res.status(201).json({res: result});
 };
 
 module.exports = {
-    getAllProducts,
-    getProductById,
-    addProduct,
-    getProductsPage
+  getAllProducts,
+  getProductById,
+  addProduct,
+  getProductsPage,
 };
