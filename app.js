@@ -4,6 +4,7 @@ const userRouter = require('./src/routes/userRoute');
 const orderRouter = require('./src/routes/orderRoute');
 const categoriesRouter = require('./src/routes/categoriesRoute');
 const productRouter = require('./src/routes/productRoute');
+const bookRouter = require('./src/routes/bookRoutes');
 
 const loggingmiddleware = require('./src/middlewares/logging');
 
@@ -19,6 +20,7 @@ app.use('/', userRouter);
 app.use('/', orderRouter);
 app.use('/', categoriesRouter);
 app.use('/', productRouter);
+app.use('/', bookRouter);
 
 // const routes = require('./routes');
 
