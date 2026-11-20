@@ -16,7 +16,7 @@ const createTables = async (connection) => {
         )
         `,
         `
-        CREATE TABLE IF NOT EXISTS Buses (
+        CREATE TABLE IF NOT EXISTS Bus (
             id INT AUTO_INCREMENT PRIMARY KEY,
             busNumber VARCHAR(255) NOT NULL UNIQUE,
             totalSeats INT NOT NULL,

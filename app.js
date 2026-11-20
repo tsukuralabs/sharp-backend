@@ -53,6 +53,7 @@ const express = require("express");
 
 const userRouter = require("./src/routes/userRoutes");
 const studentRouter = require("./src/routes/studentRoutes");
+const busRouter = require("./src/routes/busRoutes");
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.get("/", (req, res) => {
 
 app.use("/", userRouter);
 app.use("/", studentRouter);
+app.use("/", busRouter);
 
 app.use((req, res) => {
     res.status(404).send("404 - Page Not Found");
