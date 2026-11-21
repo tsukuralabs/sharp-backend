@@ -19,6 +19,7 @@
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "mysql2": "^3.24.6",
+    "sequelize": "^6.37.8",
     "validator": "^13.15.35"
   },
   "devDependencies": {
