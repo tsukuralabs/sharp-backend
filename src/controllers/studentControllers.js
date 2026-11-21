@@ -1,116 +1,171 @@
-const connection = require('../config/db');
-const db = require('../config/db');
+const db = require("../config/db");
+const {
+  validateStudent,
+  allowedEditStudents,
+} = require("../helpers/validation");
 
+// POST /students
 const addEntries = (req, res) => {
-    const { email, name } = req.body;
-    const insertQuery = 'INSERT INTO Students (email, name) VALUES (?,?)';
+  const validationError = validateStudent(req);
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
+  }
 
-    db.execute(insertQuery, [email, name], (err) => {
-        if (err) {
-            console.log(err.message);
-            res.status(500).send(err.message);
-            connection.end();
-            return;
-        }
-        console.log('Value has been inserted');
-        res.status(200).send(`Student ${name} successfully added`);
-    });
-};
+  const { email, name, age } = req.body;
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = name.trim();
+  const cleanAge = Number(age);
 
-const updateStudents = (req, res) => {
-    const { id } = req.params;
+  console.log("cleanName", cleanName);
+  console.log("name", name);
 
-    const { name, email } = req.body;
+  const checkEmailQuery = "SELECT id FROM Students WHERE email = ? LIMIT 1";
 
-    const updateQuery = 'UPDATE Students SET name= ?, email= ? WHERE id = ?';
-
-    db.execute(updateQuery, [name, email, id], (err, result) => {
-        if (err) {
-            console.log(err.message);
-            res.status(500).send(err.message);
-            connection.end();
-            return;
-        }
-
-        if (result.affectedRows === 0) {
-            res.status(404).send('Student not found');
-            return;
-        }
-        console.log('Vallue has been updated');
-        res.status(200).send(`Name updated to ${name} & ${email} `);
-    });
-};
-
-const getStudentById = (req, res) => {
-    const { id } = req.params;
-
-    const getQuery = 'SELECT * FROM Students WHERE id = ?';
-
-    db.execute(getQuery, [id], (err, result) => {
-        if (err) {
-            console.log(err.message);
-            return res.status(500).send(err.message);
-        }
-
-        if (result.length === 0) {
-            return res.status(404).send('Student not found');
-        }
-
-        res.status(200).json(result[0]);
-    });
-};
-
-
-const getStudentByName = (req, res) => {
-    const { name } = req.query;
-
-    const getQuery = 'SELECT * FROM Students WHERE name = ?';
-
-    db.execute(getQuery, [name], (err, result) => {
-        if (err) {
-            console.log(err.message);
-            return res.status(500).send(err.message);
-        }
-
-        if (result.length === 0) {
-            return res.status(404).send('Student not found');
-        }
-
-        res.status(200).json(result);
-    });
-};
-
-const deleteStudent = (req, res) => {
-    const { id } = req.params;
-    const { email } = req.body;
-
-    // Validate ID
-    if (!Number.isInteger(Number(id)) || Number(id) <= 0) {
-        return res.status(400).send('Invalid student ID');
+  db.execute(checkEmailQuery, [cleanEmail], (checkErr, rows) => {
+    if (checkErr) {
+      console.log(checkErr.message);
+      return res.status(500).json({ error: checkErr.message });
     }
 
-    // Validate email
-    if (!email) {
-        return res.status(400).send('Email is required');
+    if (rows.length > 0) {
+      return res.status(409).json({ error: "Email already exists" });
     }
 
-    const deleteQuery = 'DELETE FROM Students WHERE id = ? AND email = ?';
+    const insertQuery =
+      "INSERT INTO Students (email, name, age) VALUES (?, ?, ?)";
 
-    db.execute(deleteQuery, [id, email], (err, result) => {
-        if (err) {
-            console.log(err.message);
-            return res.status(500).send('Internal server error');
+    db.execute(
+      insertQuery,
+      [cleanEmail, cleanName, cleanAge],
+      (insertErr, result) => {
+        if (insertErr) {
+          if (insertErr.code === "ER_DUP_ENTRY") {
+            return res.status(409).json({ error: "Email already exists" });
+          }
+          console.log(insertErr.message);
+          return res.status(500).json({ error: insertErr.message });
         }
 
-        if (result.affectedRows === 0) {
-            return res.status(404).send('Student not found or email does not match');
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: `Student with ID ${id} successfully deleted`
+        console.log("Value has been inserted");
+        return res.status(201).json({
+          message: `Student ${cleanName} successfully added`,
+          id: result.insertId,
         });
-    });
+      },
+    );
+  });
 };
 
-module.exports = { addEntries, updateStudents, getStudentById, getStudentByName, deleteStudent };
+// GET /students
+const getAllStudents = (req, res) => {
+  const getAllQuery = "SELECT * FROM Students";
+
+  db.execute(getAllQuery, (err, results) => {
+    if (err) {
+      console.log(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+
+    return res.status(200).json(results);
+  });
+};
+
+// GET /students/:id
+const getStudentById = (req, res) => {
+  const { id } = req.params;
+
+  const getQuery = "SELECT * FROM Students WHERE id = ?";
+
+  db.execute(getQuery, [id], (err, result) => {
+    if (err) {
+      console.log(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    return res.status(200).json(result[0]);
+  });
+};
+
+// PUT /students/:id
+const updateStudent = (req, res) => {
+  const { id } = req.params;
+
+  if (!allowedEditStudents(req)) {
+    return res.status(400).json({
+      error: "Invalid fields. Only name and email can be updated",
+    });
+  }
+
+  const { name, email, age } = req.body;
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = name.trim();
+  const cleanAge = Number(age);
+
+  const checkEmailQuery =
+    "SELECT id FROM Students WHERE email = ? AND id != ? LIMIT 1";
+
+  db.execute(checkEmailQuery, [cleanEmail, id], (checkErr, rows) => {
+    if (checkErr) {
+      console.log(checkErr.message);
+      return res.status(500).json({ error: checkErr.message });
+    }
+
+    if (rows.length > 0) {
+      return res
+        .status(409)
+        .json({ error: "Email already in use by another student" });
+    }
+
+    const updateQuery = "UPDATE Students SET name = ?, email = ? WHERE id = ?";
+
+    db.execute(updateQuery, [cleanName, cleanEmail, id], (err, result) => {
+      if (err) {
+        console.log(err.message);
+        return res.status(500).json({ error: err.message });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+
+      return res.status(200).json({
+        message: `Student ${cleanName} successfully updated`,
+      });
+    });
+  });
+};
+
+// DELETE /students/:id
+const deleteStudent = (req, res) => {
+  const { id } = req.params;
+
+  const deleteQuery = "DELETE FROM Students WHERE id = ?";
+
+  db.execute(deleteQuery, [id], (err, result) => {
+    if (err) {
+      console.log(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Student with ID ${id} successfully deleted`,
+    });
+  });
+};
+
+module.exports = {
+  addEntries,
+  getAllStudents,
+  getStudentById,
+  updateStudent,
+  deleteStudent,
+};

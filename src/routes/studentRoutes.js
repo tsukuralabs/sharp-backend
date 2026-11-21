@@ -2,9 +2,11 @@ const express = require("express");
 const studentController = require('../controllers/studentControllers');
 const studentRouter = express.Router();
 
-studentRouter.post("/students/add", studentController.addEntries);
+studentRouter.post("/students", studentController.addEntries);
 
-studentRouter.patch("/students/update/:id", studentController.updateStudents);
+studentRouter.get("/students", studentController.getAllStudents);
+
+studentRouter.put("/students/:id", studentController.updateStudent);
 
 studentRouter.get("/students/:id", studentController.getStudentById);
 

@@ -12,7 +12,8 @@ const createTables = async (connection) => {
         CREATE TABLE IF NOT EXISTS Students (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
-            email VARCHAR(255) NOT NULL UNIQUE
+            email VARCHAR(255) NOT NULL UNIQUE,
+            age INT NOT NULL
         )
         `,
         `
