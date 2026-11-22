@@ -12,5 +12,7 @@ studentRouter.get("/students/:id", studentController.getStudentById);
 
 studentRouter.delete("/students/delete/:id", studentController.deleteStudent);
 
+studentRouter.post("/addingStudentWithCard", studentController.addingValuesToStudentsAndIdentityTable);
+
 module.exports = studentRouter;
 

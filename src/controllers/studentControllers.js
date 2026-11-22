@@ -3,6 +3,7 @@ const {
   validateStudent,
   allowedEditStudents,
 } = require("../helpers/validation");
+const { Student, IdentityCard } = require("../models");
 
 // POST /students
 const addEntries = (req, res) => {
@@ -162,10 +163,40 @@ const deleteStudent = (req, res) => {
   });
 };
 
+const addingValuesToStudentsAndIdentityTable = async (req, res) => {
+  try {
+    const studentData = req.body.student;
+    // Supports both "identityCard" and "IdentityCard" in the JSON body
+    const cardData = req.body.identityCard || req.body.IdentityCard;
+
+    if (!studentData || !cardData) {
+      return res.status(400).json({
+        error: "Both 'student' and 'identityCard' objects are required",
+      });
+    }
+
+    const student = await Student.create(studentData);
+    const idCard = await IdentityCard.create({
+      ...cardData,
+      StudentId: student.id,
+    });
+
+    return res.status(201).json({
+      student,
+      idCard,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   addEntries,
   getAllStudents,
   getStudentById,
   updateStudent,
   deleteStudent,
+  addingValuesToStudentsAndIdentityTable,
 };
