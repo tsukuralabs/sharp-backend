@@ -3,6 +3,7 @@ const express = require("express");
 const userRouter = require("./src/routes/userRoutes");
 const studentRouter = require("./src/routes/studentRoutes");
 const departmentRouter = require("./src/routes/departmentRoutes");
+const courseRouter = require("./src/routes/courseRoutes");
 // const busRouter = require("./src/routes/busRoutes");
 
 // models
@@ -18,7 +19,8 @@ app.get("/", (req, res) => {
 
 app.use("/", userRouter);
 app.use("/", studentRouter);
-app.use("/", departmentRouter)
+app.use("/", departmentRouter);
+app.use("/", courseRouter);
 // app.use("/", busRouter);
 
 app.use((req, res) => {

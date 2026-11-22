@@ -3,7 +3,7 @@ const {
   validateStudent,
   allowedEditStudents,
 } = require("../helpers/validation");
-const { Student, IdentityCard } = require("../models");
+const { Student, IdentityCard, Course } = require("../models");
 
 // POST /students
 const addEntries = (req, res) => {
@@ -192,6 +192,74 @@ const addingValuesToStudentsAndIdentityTable = async (req, res) => {
   }
 };
 
+// Enroll student in multiple courses
+const enrollStudent = async (req, res) => {
+  try {
+    const { studentId, courseIds } = req.body;
+
+    // Find student
+    const student = await Student.findByPk(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    // Find courses
+    const courses = await Course.findAll({
+      where: {
+        id: courseIds,
+      },
+    });
+
+    if (courses.length !== courseIds.length) {
+      return res.status(404).json({
+        message: "One or more courses not found",
+      });
+    }
+
+    // Enroll student in courses
+    await student.addCourses(courses);
+
+    return res.status(200).json({
+      message: "Student enrolled successfully",
+      student,
+      courses,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// Get all courses of a student
+const getStudentCourses = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const student = await Student.findByPk(studentId);
+
+    if (!student) {
+      return res.status(404).json({
+        message: "Student not found",
+      });
+    }
+
+    const courses = await student.getCourses();
+
+    return res.status(200).json({
+      student: student.name,
+      courses,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addEntries,
   getAllStudents,
@@ -199,4 +267,6 @@ module.exports = {
   updateStudent,
   deleteStudent,
   addingValuesToStudentsAndIdentityTable,
+  enrollStudent,
+  getStudentCourses,
 };
